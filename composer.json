@@ -6,9 +6,27 @@
     "authors": [
         {
             "name": "Carlos Ratia",
-            "email": "carlos.ratia@bunkerdb.com"
+            "email": "cratia.github@gmail.com"
         }
     ],
+    "autoload": {
+        "classmap": [
+            "src/"
+        ],
+        "psr-4": {
+            "Cratia\\ORM\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
     "minimum-stability": "stable",
-    "require": {}
+    "require": {
+        "php": ">=7.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.0"
+    }
 }
