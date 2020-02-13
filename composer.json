@@ -1,0 +1,14 @@
+{
+    "name": "cratia/orm-dql",
+    "description": "DQL stands for Dialect Query Language and is an Object Query, DQL provides powerful querying capabilities over your object model.",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Carlos Ratia",
+            "email": "carlos.ratia@bunkerdb.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {}
+}
