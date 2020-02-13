@@ -2,7 +2,7 @@
 declare(strict_types=1);
 
 
-namespace Cratia\ORM\DQL\Strategies\SQL\Mysql;
+namespace Cratia\ORM\DQL\Strategies\SQL\MySQL;
 
 
 use Cratia\ORM\DQL\Interfaces\IField;
@@ -13,7 +13,7 @@ use Exception;
 
 /**
  * Class FieldToSelectExprSQL
- * @package Cratia\ORM\DQL\Strategies\SQL\Mysql
+ * @package Cratia\ORM\DQL\Strategies\SQL\MySQL
  */
 class FieldToSelectExprSQL implements IStrategyToSQL
 {

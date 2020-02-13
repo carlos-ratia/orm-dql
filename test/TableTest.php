@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
 
 /**
  * Class TableTest
- * @package Tests\Application\Models\ORM
+ * @package Tests\Cratia\ORM\DQL
  */
 class TableTest extends PHPUnit_TestCase
 {

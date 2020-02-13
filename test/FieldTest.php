@@ -8,11 +8,14 @@ namespace Tests\Cratia\ORM\DQL;
 use Cratia\ORM\DQL\Field;
 use Cratia\ORM\DQL\Interfaces\IField;
 use Cratia\ORM\DQL\Sql;
-use Cratia\ORM\DQL\Strategies\SQL\Mysql\FieldToSelectExprSQL;
+use Cratia\ORM\DQL\Strategies\SQL\MySQL\FieldToSelectExprSQL;
 use Cratia\ORM\DQL\Table;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
 
-
+/**
+ * Class FieldTest
+ * @package Tests\Cratia\ORM\DQL
+ */
 class FieldTest extends PHPUnit_TestCase
 {
     public function testConstructorTypeColumnWithAs()

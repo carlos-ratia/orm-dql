@@ -13,8 +13,8 @@ use Cratia\ORM\DQL\Table;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
 
 /**
- * Class FieldTest
- * @package Tests\Application\Models\ORM
+ * Class FilterTest
+ * @package Tests\Cratia\ORM\DQL
  */
 class FilterTest extends PHPUnit_TestCase
 {
