@@ -8,7 +8,7 @@ use Cratia\ORM\DQL\Interfaces\IField;
 use Cratia\ORM\DQL\Interfaces\ISql;
 use Cratia\ORM\DQL\Interfaces\IStrategyToSQL;
 use Cratia\ORM\DQL\Interfaces\ITable;
-use Cratia\ORM\DQL\Strategies\SQL\MySQL\FieldToSelectExprSQL;
+use Cratia\ORM\DQL\Strategies\SQL\Mysql\FieldToSelectExprSQL;
 use Exception;
 
 /**
