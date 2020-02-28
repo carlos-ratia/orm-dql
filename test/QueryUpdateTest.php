@@ -118,7 +118,7 @@ class QueryUpdateTest extends PHPUnit_TestCase
 
         $sql = $update->toSql();
         $this->assertInstanceOf(ISql::class, $sql);
-        $sentence = "UPDATE `table_1 AS t1` SET `t1.column1` = ?,`t1.column21` = ?,`t1.column22` = ?,`t1.column3` = ?,`t1.column4` = ?,`t1.column5` = ?,`t1.column6` = ? WHERE (t1.column1 = ? AND t1.column2 = ? AND t1.column3 = ?)";
+        $sentence = "UPDATE table_1 AS t1 SET t1.column1 = ?,t1.column21 = ?,t1.column22 = ?,t1.column3 = ?,t1.column4 = ?,t1.column5 = ?,t1.column6 = ? WHERE (t1.column1 = ? AND t1.column2 = ? AND t1.column3 = ?)";
         $param = [1, 0, 1, null, '1', "{$date1}", "{$date2}", 1, 0, 1];
 
         $this->assertEquals($sentence, $sql->getSentence());

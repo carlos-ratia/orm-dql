@@ -52,11 +52,11 @@ class QueryUpdateToSQL implements IStrategyToSQL
                 ->setStrategyToSQL(new FieldToWhereConditionSQL())
                 ->toSql()
                 ->getSentence();
-            return "`{$sentence}` = ?";
+            return "{$sentence} = ?";
         }, $fields);
         $sql_columns = implode(',', $sql_columns);
 
-        return "UPDATE `{$reference->getFrom()->toSQL()->getSentence()}` SET {$sql_columns} WHERE {$reference->getFilter()->toSQL()->getSentence()}";
+        return "UPDATE {$reference->getFrom()->toSQL()->getSentence()} SET {$sql_columns} WHERE {$reference->getFilter()->toSQL()->getSentence()}";
     }
 
     /**
