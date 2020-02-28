@@ -6,12 +6,13 @@ namespace Cratia\ORM\DQL;
 
 
 use Cratia\ORM\DQL\Interfaces\ISql;
+use JsonSerializable;
 
 /**
  * Class Sql
  * @package Cratia\ORM\DQL
  */
-class Sql implements ISql
+class Sql implements ISql, JsonSerializable
 {
     /**
      * @var string
@@ -46,5 +47,14 @@ class Sql implements ISql
     public function getParams(): array
     {
         return $this->params;
+    }
+
+
+    /**
+     * @inheritDoc
+     */
+    public function jsonSerialize()
+    {
+        return ['sentence' => $this->getSentence(), 'params' => $this->getParams()];
     }
 }
