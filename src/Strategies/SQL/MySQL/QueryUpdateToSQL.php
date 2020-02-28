@@ -79,7 +79,7 @@ class QueryUpdateToSQL implements IStrategyToSQL
                     (DateTime::createFromFormat('Y-m-d H:i:s', $value) !== false) ||
                     (DateTime::createFromFormat('Y-m-d', $value) !== false))
             ) {
-                $sql_value = "'{$value}'";
+                $sql_value = "{$value}";
             } elseif (is_string($value)) {
                 $sql_value = "{$value}";
             } elseif (is_numeric($value)) {
