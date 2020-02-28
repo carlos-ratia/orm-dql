@@ -87,7 +87,7 @@ class QueryInsertToSQL implements IStrategyToSQL
             } elseif (is_bool($value)) {
                 $sql_value = filter_var($value, FILTER_VALIDATE_BOOLEAN) ? 1 : 0;
             } elseif (is_null($value)) {
-                $sql_value = 'NULL';
+                $sql_value = null;
             } else {
                 $sql_value = $value;
             }

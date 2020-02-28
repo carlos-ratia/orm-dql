@@ -104,7 +104,7 @@ class QueryInsertTest extends PHPUnit_TestCase
         $sql = $insert->toSql();
         $this->assertInstanceOf(ISql::class, $sql);
         $sentence = "INSERT INTO `table_1` (`column1`,`column21`,`column22`,`column3`,`column4`,`column5`,`column6`) VALUES (?,?,?,?,?,?,?)";
-        $param = [1, 0, 1, 'NULL', '1', "{$date1}", "{$date2}"];
+        $param = [1, 0, 1, null, '1', "{$date1}", "{$date2}"];
 
         $this->assertEquals($sentence, $sql->getSentence());
         $this->assertEquals($param, $sql->getParams());
