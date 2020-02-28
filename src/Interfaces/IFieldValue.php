@@ -16,6 +16,11 @@ interface IFieldValue
     public function getTable(): ITable;
 
     /**
+     * @return IField
+     */
+    public function getField(): IField;
+
+    /**
      * @return string
      */
     public function getColumn(): string;
