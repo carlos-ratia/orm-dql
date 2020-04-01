@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Cratia\ORM\DQL\Strategies\SQL\MySQL;
 
 
+use Cratia\ORM\DQL\Field;
 use Cratia\ORM\DQL\Interfaces\IField;
 use Cratia\ORM\DQL\Interfaces\IFilter;
 use Cratia\ORM\DQL\Interfaces\ISql;
@@ -101,7 +102,13 @@ class FilterToWhereConditionSQL implements IStrategyToSQL
             $fieldRight = $filter->getValue()->setStrategyToSQL(new FieldToWhereConditionSQL());
             return "{$fieldLeft->toSQL()} = {$fieldRight->toSQL()}";
         } else {
-            return "{$fieldSQL} {$operator} ?";
+            if($value instanceof IField){
+                $field = $filter->getValue()->setStrategyToSQL(new FieldToWhereConditionSQL());
+                return "{$fieldSQL} {$operator} {$field->toSQL()->getSentence()}";
+            }else{
+                return "{$fieldSQL} {$operator} ?";
+            }
+
         }
     }
 

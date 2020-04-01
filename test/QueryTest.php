@@ -444,4 +444,20 @@ class QueryTest extends PHPUnit_TestCase
         $sql->params = [];
         $this->assertEqualsCanonicalizing($sql, $query->toSQL());
     }
+
+    public function testSimpleQuery6()
+    {
+        $table1 = new Table("multibrand_userdata", "mbud");
+        $field10 = Field::column($table1, "created");
+        $field11 = Field::custom($table1, "CURDATE()", "");
+        $query = new Query($table1);
+        $query
+            ->addFilter(Filter::eq($field10, $field11));
+
+        $sql = new Sql();
+        $sql->sentence = "SELECT SQL_CALC_FOUND_ROWS mbud.* FROM multibrand_userdata AS mbud WHERE mbud.created = CURDATE() LIMIT 20 OFFSET 0";
+        $sql->params = [$field11];
+
+        $this->assertEqualsCanonicalizing($sql, $query->toSQL());
+    }
 }
