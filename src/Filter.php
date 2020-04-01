@@ -58,7 +58,9 @@ class Filter implements IFilter
 
         if (is_null($value)) {
             $this->value = new ValueNull();
-        } elseif (is_array($value)) {
+        }elseif($value instanceof IField){
+            $this->value = $value;
+        }elseif (is_array($value)) {
             $this->value = $value;
         } else {
             $this->value = [$value];
@@ -114,15 +116,15 @@ class Filter implements IFilter
 
     /**
      * @param IField $field
-     * @param number|string|boolean $value
+     * @param number|string|boolean|IField $value
      * @return IFilter
      * @throws Exception
      */
     public static function eq(IField $field, $value): IFilter
     {
-        if (!(is_numeric($value) || is_string($value) || is_bool($value))) {
+        if (!(is_numeric($value) || is_string($value) || is_bool($value) || $value instanceof IField)) {
             throw new Exception(
-                "Error in the Filter::eq(...) -> Error in type of value, the value must to be number or string or boolean."
+                "Error in the Filter::eq(...) -> Error in type of value, the value must to be number or string or boolean or instance of IField."
             );
         }
         return new Filter($field, IFilter::EQUAL, $value);
@@ -130,15 +132,15 @@ class Filter implements IFilter
 
     /**
      * @param IField $field
-     * @param number|string|boolean $value
+     * @param number|string|boolean|IField $value
      * @return IFilter
      * @throws Exception
      */
     public static function ne(IField $field, $value): IFilter
     {
-        if (!(is_numeric($value) || is_string($value) || is_bool($value))) {
+        if (!(is_numeric($value) || is_string($value) || is_bool($value) || $value instanceof IField)) {
             throw new Exception(
-                "Error in the Filter::ne(...) -> Error in type of value, the value must to be number or string or boolean."
+                "Error in the Filter::ne(...) -> Error in type of value, the value must to be number or string or boolean or instance of IField."
             );
         }
         return new Filter($field, IFilter::DISTINCT, $value);
@@ -146,15 +148,15 @@ class Filter implements IFilter
 
     /**
      * @param IField $field
-     * @param number|string $value
+     * @param number|string|IField $value
      * @return IFilter
      * @throws Exception
      */
     public static function gte(IField $field, $value): IFilter
     {
-        if (!(is_numeric($value) || is_string($value))) {
+        if (!(is_numeric($value) || is_string($value) || $value instanceof IField)) {
             throw new Exception(
-                "Error in the Filter::gte(...) -> Error in type of value, the value must to be number or string or boolean."
+                "Error in the Filter::gte(...) -> Error in type of value, the value must to be number or string or boolean or instance of IField."
             );
         }
         return new Filter($field, IFilter::MAJOR_EQUAL, $value);
@@ -162,15 +164,15 @@ class Filter implements IFilter
 
     /**
      * @param IField $field
-     * @param number|string $value
+     * @param number|string|IField $value
      * @return IFilter
      * @throws Exception
      */
     public static function gt(IField $field, $value): IFilter
     {
-        if (!(is_numeric($value) || is_string($value))) {
+        if (!(is_numeric($value) || is_string($value) || $value instanceof IField)) {
             throw new Exception(
-                "Error in the Filter::gt(...) -> Error in type of value, the value must to be number or string."
+                "Error in the Filter::gt(...) -> Error in type of value, the value must to be number or string or instance of IField."
             );
         }
         return new Filter($field, IFilter::MAJOR, $value);
@@ -178,15 +180,15 @@ class Filter implements IFilter
 
     /**
      * @param IField $field
-     * @param number|string $value
+     * @param number|string|IField $value
      * @return IFilter
      * @throws Exception
      */
     public static function lte(IField $field, $value): IFilter
     {
-        if (!(is_numeric($value) || is_string($value))) {
+        if (!(is_numeric($value) || is_string($value) || $value instanceof IField)) {
             throw new Exception(
-                "Error in the Filter::lte(...) -> Error in type of value, the value must to be number or string."
+                "Error in the Filter::lte(...) -> Error in type of value, the value must to be number or string or instance of IField."
             );
         }
         return new Filter($field, IFilter::LESS_EQUAL, $value);
@@ -194,15 +196,15 @@ class Filter implements IFilter
 
     /**
      * @param IField $field
-     * @param number|string $value
+     * @param number|string|IField $value
      * @return IFilter
      * @throws Exception
      */
     public static function lt(IField $field, $value): IFilter
     {
-        if (!(is_numeric($value) || is_string($value))) {
+        if (!(is_numeric($value) || is_string($value) || $value instanceof IField)) {
             throw new Exception(
-                "Error in the Filter::lt(...) -> Error in type of value, the value must to be number or string."
+                "Error in the Filter::lt(...) -> Error in type of value, the value must to be number or string or instance of IField."
             );
         }
         return new Filter($field, IFilter::LESS, $value);
