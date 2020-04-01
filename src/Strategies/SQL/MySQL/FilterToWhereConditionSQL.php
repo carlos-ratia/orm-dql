@@ -154,7 +154,9 @@ class FilterToWhereConditionSQL implements IStrategyToSQL
         $value = $filter->getValue();
         if ($value instanceof ValueNull) {
             return [];
-        } elseif (is_array($value) && count($value) === 0) {
+        }elseif($value instanceof IField) {
+            return [];
+        }elseif (is_array($value) && count($value) === 0) {
             return [];
         } elseif (is_array($value) && count($value) > 0) {
             foreach ($value as $item) {

@@ -456,7 +456,7 @@ class QueryTest extends PHPUnit_TestCase
 
         $sql = new Sql();
         $sql->sentence = "SELECT SQL_CALC_FOUND_ROWS mbud.* FROM multibrand_userdata AS mbud WHERE mbud.created = CURDATE() LIMIT 20 OFFSET 0";
-        $sql->params = [$field11];
+        $sql->params = [];
 
         $this->assertEqualsCanonicalizing($sql, $query->toSQL());
     }
