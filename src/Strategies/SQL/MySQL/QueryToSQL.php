@@ -88,6 +88,11 @@ class QueryToSQL implements IStrategyToSQL
             $sqlJoinQuery = implode(' ', $this->getQueryParts()->getJoins());
         }
 
+        //JOIN SUB-QUERYS
+        if ($this->getQueryParts()->hasQuerys()) {
+            $sqlJoinQuery = implode(' ', $this->getQueryParts()->getSubQuerys());
+        }
+
         //WHERE
         $sqlWhereQuery = false;
         if ($this->getQueryParts()->hasWhere()) {

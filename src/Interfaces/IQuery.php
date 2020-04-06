@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Cratia\ORM\DQL\Interfaces;
 
+use Cratia\ORM\DQL\SubQuery;
+
 /**
  * Interface IQuery
  * @package Cratia\ORM\DQL\Interfaces
@@ -128,4 +130,15 @@ interface IQuery
      * @return IQuery
      */
     public function join(IQuery $query): IQuery;
+
+    /**
+     * @return IQuery[]
+     */
+    public function getSubQuerys(): array;
+
+    /**
+     * @param SubQuery $query
+     * @return IQuery
+     */
+    public function addSubQuery(SubQuery $query): IQuery;
 }

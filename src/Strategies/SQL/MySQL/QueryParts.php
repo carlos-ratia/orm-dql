@@ -19,6 +19,7 @@ use Cratia\ORM\DQL\Interfaces\ISql;
 use Cratia\ORM\DQL\Interfaces\ITable;
 use Cratia\ORM\DQL\OrderByNull;
 use Cratia\ORM\DQL\RelationNull;
+use Cratia\ORM\DQL\SubQuery;
 use Cratia\ORM\Strategies\SQL\MySQL\QueryRelationBag;
 
 /**
@@ -83,6 +84,11 @@ class QueryParts
     private $relations;
 
     /**
+     * @var IQuery[]
+     */
+    private $sub_querys;
+
+    /**
      * QueryParts constructor.
      * @param IQuery $query
      */
@@ -103,10 +109,12 @@ class QueryParts
         $this->offset = $query->getOffset();
         $this->params = [];
         $this->relations = QueryRelations::create($query);
+        $this->sub_querys = [];
 
         $this->loadRelationsForQuery($query);   //FIRST STEP
         $this->loadSqlFieldsForQuery($query);   //FIELDS
         $this->loadSqlJoinsForQuery($query);    //JOINS
+        $this->loadSqlSubQuerysForQuery($query);    //SUB-QUERYS
         $this->loadSqlFiltersForQuery($query);  //WHERES
         $this->loadSqlGroupBysForQuery($query); //GROUP BYS
         $this->loadSqlOrderBysForQuery($query); //ORDER BYS
@@ -201,6 +209,20 @@ class QueryParts
                 $this->joins[] = $sql->getSentence();
                 $this->addParams($sql->getParams());
             }
+        }
+    }
+
+
+    /**
+     * @param IQuery $query
+     */
+    protected function loadSqlSubQuerysForQuery(IQuery $query)
+    {
+        foreach ($query->getSubQuerys() as $sub_query) {
+            /** @var SubQuery $sub_query */
+            $response = $sub_query->toSQL();
+            $this->sub_querys[] = "{$sub_query->getJoinType()} JOIN ({$response->getSentence()}) as {$sub_query->getAs()->getAs()}";
+            $this->addParams($response->getParams());
         }
     }
 
@@ -348,6 +370,16 @@ class QueryParts
     }
 
     /**
+     * @return IQuery[]
+     */
+    public function getSubQuerys(): array
+    {
+        return $this->sub_querys;
+    }
+
+
+
+    /**
      * @return bool
      */
     public function hasFields(): bool
@@ -361,6 +393,14 @@ class QueryParts
     public function hasJoins(): bool
     {
         return (is_array($this->getJoins()) && count($this->getJoins()) > 0);
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasQuerys(): bool
+    {
+        return (is_array($this->getSubQuerys()) && count($this->getSubQuerys()) > 0);
     }
 
     /**
