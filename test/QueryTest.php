@@ -4,6 +4,7 @@
 namespace Tests\Cratia\ORM\DQL;
 
 
+use App\Context\GeneralContext;
 use Cratia\ORM\DQL\Field;
 use Cratia\ORM\DQL\Filter;
 use Cratia\ORM\DQL\FilterGroup;
@@ -13,6 +14,7 @@ use Cratia\ORM\DQL\OrderBy;
 use Cratia\ORM\DQL\Query;
 use Cratia\ORM\DQL\Relation;
 use Cratia\ORM\DQL\Sql;
+use Cratia\ORM\DQL\SubQuery;
 use Cratia\ORM\DQL\Table;
 use Exception;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
@@ -458,6 +460,32 @@ class QueryTest extends PHPUnit_TestCase
         $sql->sentence = "SELECT SQL_CALC_FOUND_ROWS mbud.* FROM multibrand_userdata AS mbud WHERE mbud.created = CURDATE() LIMIT 20 OFFSET 0";
         $sql->params = [];
 
+        $this->assertEqualsCanonicalizing($sql, $query->toSQL());
+    }
+
+    public function testSubQuery(){
+        $mbud= new Table("multibrand_userdata", "mbud");
+
+
+        $table_as = new Table("Table1","t1");
+        $sub_query = new SubQuery($table_as,$mbud);
+        $sub_query->addFilter(
+            Filter::lt(Field::column($mbud,"created"),"2020-01-01")
+        );
+
+        $query = new Query($mbud);
+        $query->addSubQuery($sub_query)
+        ->addField(Field::column($table_as,"created","created"))
+        ->addFilter(Filter::eq(
+            Field::column($table_as,"created","created"),'2017-05-29'
+        ));
+
+        $sql = new Sql();
+        $sql->sentence = "SELECT SQL_CALC_FOUND_ROWS t1.created AS created FROM multibrand_userdata AS mbud  JOIN (SELECT mbud.* FROM multibrand_userdata AS mbud WHERE mbud.created < ? LIMIT 20 OFFSET 0) as t1 WHERE t1.created = ? LIMIT 20 OFFSET 0";
+        $sql->params = [
+            "2020-01-01",
+            "2017-05-29"
+        ];
         $this->assertEqualsCanonicalizing($sql, $query->toSQL());
     }
 }

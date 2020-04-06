@@ -66,6 +66,12 @@ class Query implements IQuery
     private $strategyToSQL;
 
     /**
+     * @var IQuery[]
+     */
+    private $sub_querys;
+
+
+    /**
      * Query constructor.
      * @param ITable|null $from
      * @param IStrategyToSQL|null $strategy
@@ -89,6 +95,7 @@ class Query implements IQuery
         $this->filters = [];
         $this->groupBys = [];
         $this->orderBys = [];
+        $this->sub_querys = [];
     }
 
     /**
@@ -278,4 +285,20 @@ class Query implements IQuery
             ->setOffset($query->getOffset());
         return $this;
     }
+
+    public function addSubQuery(SubQuery $query): IQuery
+    {
+        if (is_null($query->getAs())) {
+            throw new \Exception("The querys to do a join need to have an As setted");
+        }
+        $this->sub_querys[] = $query;
+        return $this;
+    }
+
+    public function getSubQuerys(): array
+    {
+        return $this->sub_querys;
+    }
+
+
 }
