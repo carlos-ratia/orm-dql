@@ -31,7 +31,7 @@ class QueryToSQL implements IStrategyToSQL
     /**
      * @return IQuery
      */
-    public function getQuery(): IQuery
+    public function getQuery(): ?IQuery
     {
         return $this->query;
     }
@@ -39,10 +39,22 @@ class QueryToSQL implements IStrategyToSQL
     /**
      * @return QueryParts
      */
-    public function getQueryParts(): QueryParts
+    public function getQueryParts(): ?QueryParts
     {
         return $this->queryParts;
     }
+
+    /**
+     * @param QueryParts $queryParts
+     * @return QueryToSQL
+     */
+    public function setQueryParts(QueryParts $queryParts): QueryToSQL
+    {
+        $this->queryParts = $queryParts;
+        return $this;
+    }
+
+
 
     /**
      * @param $reference
@@ -57,7 +69,10 @@ class QueryToSQL implements IStrategyToSQL
 
         /** @var IQuery $reference */
         $this->query = $reference;
-        $this->queryParts = new QueryParts($reference);
+        if(is_null($this->queryParts)){
+            $this->queryParts = new QueryParts($reference);
+        }
+
 
         $sql = new Sql();
         $sql->sentence = $this->getSQLSentence();
