@@ -388,6 +388,118 @@ class QueryParts
     }
 
     /**
+     * @param bool $foundRows
+     * @return QueryParts
+     */
+    public function setFoundRows(bool $foundRows): QueryParts
+    {
+        $this->foundRows = $foundRows;
+        return $this;
+    }
+
+    /**
+     * @param string[] $fields
+     * @return QueryParts
+     */
+    public function setFields(array $fields): QueryParts
+    {
+        $this->fields = $fields;
+        return $this;
+    }
+
+    /**
+     * @param string[] $groupBys
+     * @return QueryParts
+     */
+    public function setGroupBys(array $groupBys): QueryParts
+    {
+        $this->groupBys = $groupBys;
+        return $this;
+    }
+
+    /**
+     * @param string[] $orderBys
+     * @return QueryParts
+     */
+    public function setOrderBys(array $orderBys): QueryParts
+    {
+        $this->orderBys = $orderBys;
+        return $this;
+    }
+
+    /**
+     * @param string $from
+     * @return QueryParts
+     */
+    public function setFrom(string $from): QueryParts
+    {
+        $this->from = $from;
+        return $this;
+    }
+
+    /**
+     * @param int $limit
+     * @return QueryParts
+     */
+    public function setLimit(int $limit): QueryParts
+    {
+        $this->limit = $limit;
+        return $this;
+    }
+
+    /**
+     * @param int $offset
+     * @return QueryParts
+     */
+    public function setOffset(int $offset): QueryParts
+    {
+        $this->offset = $offset;
+        return $this;
+    }
+
+    /**
+     * @param string[] $joins
+     * @return QueryParts
+     */
+    public function setJoins(array $joins): QueryParts
+    {
+        $this->joins = $joins;
+        return $this;
+    }
+
+    /**
+     * @param string[] $where
+     * @return QueryParts
+     */
+    public function setWhere(array $where): QueryParts
+    {
+        $this->where = $where;
+        return $this;
+    }
+
+    /**
+     * @param array $params
+     * @return QueryParts
+     */
+    public function setParams(array $params): QueryParts
+    {
+        $this->params = $params;
+        return $this;
+    }
+
+    /**
+     * @param QueryRelations $relations
+     * @return QueryParts
+     */
+    public function setRelations(QueryRelations $relations): QueryParts
+    {
+        $this->relations = $relations;
+        return $this;
+    }
+
+
+
+    /**
      * @param array $params
      * @return QueryParts
      */
