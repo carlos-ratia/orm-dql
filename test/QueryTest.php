@@ -4,6 +4,7 @@
 namespace Tests\Cratia\ORM\DQL;
 
 
+use App\Context\GeneralContext;
 use Cratia\ORM\DQL\Field;
 use Cratia\ORM\DQL\Filter;
 use Cratia\ORM\DQL\FilterGroup;
@@ -13,6 +14,7 @@ use Cratia\ORM\DQL\OrderBy;
 use Cratia\ORM\DQL\Query;
 use Cratia\ORM\DQL\Relation;
 use Cratia\ORM\DQL\Sql;
+use Cratia\ORM\DQL\QuerySource;
 use Cratia\ORM\DQL\Table;
 use Exception;
 use PHPUnit\Framework\TestCase as PHPUnit_TestCase;
@@ -460,4 +462,34 @@ class QueryTest extends PHPUnit_TestCase
 
         $this->assertEqualsCanonicalizing($sql, $query->toSQL());
     }
+
+    public function testLikeFilterQuery()
+    {
+        $table1 = new Table("table_1", "t1");
+        $name = Field::column($table1, "name");
+        $query = new Query($table1);
+        $query->addFilter(
+            FilterGroup::and()
+                ->add(Filter::contain($name, "Federico"))
+                ->add(Filter::endWith($name, "rico"))
+                ->add(Filter::startWith($name, "Fede"))
+                ->add(Filter::notContain($name, "Antonio"))
+                ->add(Filter::notEndWith($name, "nio"))
+                ->add(Filter::notStartWith($name, "Anto"))
+        );
+
+
+        $sql = new Sql();
+        $sql->sentence = "SELECT SQL_CALC_FOUND_ROWS t1.* FROM table_1 AS t1 WHERE (t1.name LIKE ? AND t1.name LIKE ? AND t1.name LIKE ? AND t1.name NOT LIKE ? AND t1.name NOT LIKE ? AND t1.name NOT LIKE ?) LIMIT 20 OFFSET 0";
+        $sql->params = [
+            '%Federico%',
+            '%rico',
+            'Fede%',
+            '%Antonio%',
+            '%nio',
+            'Anto%'
+        ];
+        $this->assertEqualsCanonicalizing($sql, $query->toSQL());
+    }
+
 }

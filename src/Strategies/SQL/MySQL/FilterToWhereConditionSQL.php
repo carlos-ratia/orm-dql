@@ -86,31 +86,48 @@ class FilterToWhereConditionSQL implements IStrategyToSQL
         if ($value instanceof ValueNull) {
             return "{$fieldSQL} {$operator}";
         }
-
-        if ($filter->getOperator() === IFilter::BETWEEN) {
-            return "{$fieldSQL} BETWEEN ? AND ?";
-        } elseif ($filter->getOperator() === IFilter::NOT_BETWEEN) {
-            return "{$fieldSQL} NOT BETWEEN ? AND ?";
-        } elseif ($filter->getOperator() === IFilter::IN) {
-            return "{$fieldSQL} IN ({$this->getSentenceForInOrNotIn($filter)})";
-        } elseif ($filter->getOperator() === IFilter::NOT_IN) {
-            return "{$fieldSQL} NOT IN ({$this->getSentenceForInOrNotIn($filter)})";
-        } elseif ($filter->getOperator() === IFilter::COLUMN) {
-            /** @var IField $fieldLeft */
-            $fieldLeft = $filter->getField()->setStrategyToSQL(new FieldToWhereConditionSQL());
-            /** @var IField $fieldRight */
-            $fieldRight = $filter->getValue()->setStrategyToSQL(new FieldToWhereConditionSQL());
-            return "{$fieldLeft->toSQL()} = {$fieldRight->toSQL()}";
+        if ($operator===false) {
+            switch ($filter->getOperator()) {
+                case  IFilter::BETWEEN:
+                    return "{$fieldSQL} BETWEEN ? AND ?";
+                    break;
+                case  IFilter::NOT_BETWEEN:
+                    return "{$fieldSQL} NOT BETWEEN ? AND ?";
+                    break;
+                case  IFilter::IN:
+                    return "{$fieldSQL} IN ({$this->getSentenceForInOrNotIn($filter)})";
+                    break;
+                case  IFilter::NOT_IN:
+                    return "{$fieldSQL} NOT IN ({$this->getSentenceForInOrNotIn($filter)})";
+                    break;
+                case  IFilter::COLUMN:
+                    /** @var IField $fieldLeft */
+                    $fieldLeft = $filter->getField()->setStrategyToSQL(new FieldToWhereConditionSQL());
+                    /** @var IField $fieldRight */
+                    $fieldRight = $filter->getValue()->setStrategyToSQL(new FieldToWhereConditionSQL());
+                    return "{$fieldLeft->toSQL()} = {$fieldRight->toSQL()}";
+                    break;
+                case  IFilter::CONTAIN:
+                case  IFilter::START_WITH:
+                case  IFilter::END_WITH:
+                    return "{$fieldSQL} LIKE ?";
+                    break;
+                case  IFilter::NOT_CONTAIN:
+                case  IFilter::NOT_START_WITH:
+                case  IFilter::NOT_END_WITH:
+                    return "{$fieldSQL} NOT LIKE ?";
+                    break;
+            }
         } else {
-            if($value instanceof IField){
+            if ($value instanceof IField) {
                 $field = $filter->getValue()->setStrategyToSQL(new FieldToWhereConditionSQL());
                 return "{$fieldSQL} {$operator} {$field->toSQL()->getSentence()}";
-            }else{
+            } else {
                 return "{$fieldSQL} {$operator} ?";
             }
-
         }
     }
+
 
     /**
      * @param IFilter $filter
@@ -140,12 +157,7 @@ class FilterToWhereConditionSQL implements IStrategyToSQL
                 "Error in the FilterToWhereConditionSQL::getSentenceForInOrNotIn(...filter) -> The operator ({$filter->getOperator()}) needs the values to be of the array type."
             );
         }
-
-        $filterMap = array_map(function () {
-            return '?';
-        }, $values);
-
-        return implode(',', $filterMap);
+        return implode(',', array_fill(0, count($values), '?'));
     }
 
     protected function getParams(IFilter $filter)
@@ -154,9 +166,9 @@ class FilterToWhereConditionSQL implements IStrategyToSQL
         $value = $filter->getValue();
         if ($value instanceof ValueNull) {
             return [];
-        }elseif($value instanceof IField) {
+        } elseif ($value instanceof IField) {
             return [];
-        }elseif (is_array($value) && count($value) === 0) {
+        } elseif (is_array($value) && count($value) === 0) {
             return [];
         } elseif (is_array($value) && count($value) > 0) {
             foreach ($value as $item) {
@@ -168,11 +180,33 @@ class FilterToWhereConditionSQL implements IStrategyToSQL
                 }
                 $result[] = $item;
             }
-            return $result;
+            return $this->addWildCardsToParams($filter->getOperator(),$result);
         } elseif (!is_array($value)) {
-            return [$value];
+            return $this->addWildCardsToParams($filter->getOperator(),[$value]);
         } else {
-            return array_merge([], $value);
+            return $this->addWildCardsToParams($filter->getOperator(),array_merge([], $value));
         }
+    }
+
+    protected function addWildCardsToParams($operator, $value)
+    {
+        array_walk($value, function (&$val) use ($operator) {
+            switch ($operator) {
+                case  IFilter::CONTAIN:
+                case  IFilter::NOT_CONTAIN:
+                    $val = "%{$val}%";
+                    break;
+                case  IFilter::START_WITH:
+                case  IFilter::NOT_START_WITH:
+                    $val = "{$val}%";
+                    break;
+                case  IFilter::END_WITH:
+                case  IFilter::NOT_END_WITH:
+                    $val = "%{$val}";
+                    break;
+            }
+        });
+        return $value;
+
     }
 }

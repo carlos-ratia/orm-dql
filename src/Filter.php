@@ -270,7 +270,7 @@ class Filter implements IFilter
     {
         if (!is_array($value) || count($value) === 0) {
             throw new Exception(
-                "Error in the Filter::in(...) -> Error in type and length of value, the values must to be an Array and length === 0"
+                "Error in the Filter::in(...) -> Error in type and length of value, the values must to be an Array and length > 0"
             );
         }
         return new Filter($field, IFilter::IN, $value);
@@ -286,7 +286,7 @@ class Filter implements IFilter
     {
         if (!is_array($value) || count($value) === 0) {
             throw new Exception(
-                "Error in the Filter::notIn(...) -> Error in type and length of value, the values must to be an Array and length === 0"
+                "Error in the Filter::notIn(...) -> Error in type and length of value, the values must to be an Array and length > 0"
             );
         }
         return new Filter($field, IFilter::NOT_IN, $value);
@@ -301,6 +301,104 @@ class Filter implements IFilter
     {
         return new Filter($left, IFilter::COLUMN, $right);
     }
+
+    /**
+     * @param IField $field
+     * @param string $value
+     * @return IFilter
+     * @throws Exception
+     */
+    public static function contain(IField $field, string $value): IFilter
+    {
+        if (!is_string($value)) {
+            throw new Exception(
+                "Error in the Filter::contain(...) -> Error in type of value, the value must to be a string."
+            );
+        }
+        return new Filter($field, IFilter::CONTAIN, $value);
+    }
+
+    /**
+     * @param IField $field
+     * @param string $value
+     * @return IFilter
+     * @throws Exception
+     */
+    public static function notContain(IField $field, string $value): IFilter
+    {
+        if (!is_string($value)) {
+            throw new Exception(
+                "Error in the Filter::notContain(...) -> Error in type of value, the value must to be a string."
+            );
+        }
+        return new Filter($field, IFilter::NOT_CONTAIN, $value);
+    }
+
+    /**
+     * @param IField $field
+     * @param string $value
+     * @return IFilter
+     * @throws Exception
+     */
+    public static function startWith(IField $field, string $value): IFilter
+    {
+        if (!is_string($value)) {
+            throw new Exception(
+                "Error in the Filter::startWith(...) -> Error in type of value, the value must to be a string."
+            );
+        }
+        return new Filter($field, IFilter::START_WITH, $value);
+    }
+
+    /**
+     * @param IField $field
+     * @param string $value
+     * @return IFilter
+     * @throws Exception
+     */
+    public static function notStartWith(IField $field, string $value): IFilter
+    {
+        if (!is_string($value)) {
+            throw new Exception(
+                "Error in the Filter::notStartWith(...) -> Error in type of value, the value must to be a string."
+            );
+        }
+        return new Filter($field, IFilter::NOT_START_WITH, $value);
+    }
+
+    /**
+     * @param IField $field
+     * @param string $value
+     * @return IFilter
+     * @throws Exception
+     */
+    public static function endWith(IField $field, string $value): IFilter
+    {
+        if (!is_string($value)) {
+            throw new Exception(
+                "Error in the Filter::endWith(...) -> Error in type of value, the value must to be a string."
+            );
+        }
+        return new Filter($field, IFilter::END_WITH, $value);
+    }
+
+    /**
+     * @param IField $field
+     * @param string $value
+     * @return IFilter
+     * @throws Exception
+     */
+    public static function notEndWith(IField $field, string $value): IFilter
+    {
+        if (!is_string($value)) {
+            throw new Exception(
+                "Error in the Filter::notEndWith(...) -> Error in type of value, the value must to be a string."
+            );
+        }
+        return new Filter($field, IFilter::NOT_END_WITH, $value);
+    }
+
+
 
     /**
      * @return ISql
