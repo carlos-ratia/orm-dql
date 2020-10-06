@@ -8,7 +8,9 @@ use App\Context\GeneralContext;
 use Cratia\ORM\DQL\Field;
 use Cratia\ORM\DQL\Filter;
 use Cratia\ORM\DQL\FilterGroup;
+use Cratia\ORM\DQL\FilterQuery;
 use Cratia\ORM\DQL\GroupBy;
+use Cratia\ORM\DQL\Interfaces\IFilter;
 use Cratia\ORM\DQL\Interfaces\IQuery;
 use Cratia\ORM\DQL\OrderBy;
 use Cratia\ORM\DQL\Query;
@@ -490,6 +492,106 @@ class QueryTest extends PHPUnit_TestCase
             'Anto%'
         ];
         $this->assertEqualsCanonicalizing($sql, $query->toSQL());
+    }
+
+
+    public function testFilterQuery()
+    {
+        $table = new Table("multibrand_userdata");
+        $id_field = Field::column($table, "id");
+        $name_field = Field::column($table, "first_name");
+
+        $filter_query = new Query($table);
+        $filter_query
+            ->addFilter(Filter::contain($name_field, "fede"))
+            ->addField($id_field);
+
+        $query = new Query($table);
+        $query->addFilter(
+            new FilterQuery(
+                $id_field,
+                IFilter::IN,
+                $filter_query
+            )
+        );
+        $sql = new Sql();
+        $sql->sentence = "SELECT SQL_CALC_FOUND_ROWS multibrand_userdata.* FROM multibrand_userdata WHERE multibrand_userdata.id IN (SELECT multibrand_userdata.id AS id FROM multibrand_userdata WHERE multibrand_userdata.first_name LIKE ?) LIMIT 20 OFFSET 0";
+        $sql->params = [
+            '%fede%'
+        ];
+        $this->assertEqualsCanonicalizing($sql, $query->toSQL());
+
+    }
+
+    public function testFilterQueryWithMoreFilters()
+    {
+        $table = new Table("multibrand_userdata");
+        $id_field = Field::column($table, "id");
+        $name_field = Field::column($table, "first_name");
+        $last_field = Field::column($table, "last_name");
+
+        $filter_query = new Query($table);
+        $filter_query
+            ->addFilter(Filter::contain($name_field, "fede"))
+            ->addField($id_field);
+
+        $query = new Query($table);
+        $query
+            ->addFilter(Filter::gt($id_field, 2))
+            ->addFilter(
+                new FilterQuery(
+                    $id_field,
+                    IFilter::IN,
+                    $filter_query
+                )
+            )
+            ->addFilter(Filter::notContain($last_field, "guerra"));
+        $sql = new Sql();
+        $sql->sentence = "SELECT SQL_CALC_FOUND_ROWS multibrand_userdata.* FROM multibrand_userdata WHERE multibrand_userdata.id > ? AND multibrand_userdata.id IN (SELECT multibrand_userdata.id AS id FROM multibrand_userdata WHERE multibrand_userdata.first_name LIKE ?) AND multibrand_userdata.last_name NOT LIKE ? LIMIT 20 OFFSET 0";
+        $sql->params = [
+            2,
+            '%fede%',
+            '%guerra%'
+        ];
+        $this->assertEqualsCanonicalizing($sql, $query->toSQL());
+
+    }
+    public function testFilterQueryInFilterGroup()
+    {
+        $table = new Table("multibrand_userdata");
+        $id_field = Field::column($table, "id");
+        $name_field = Field::column($table, "first_name");
+        $last_field = Field::column($table, "last_name");
+
+        $filter_query = new Query($table);
+        $filter_query
+            ->addFilter(Filter::contain($name_field, "fede"))
+            ->addField($id_field);
+
+        $query = new Query($table);
+        $query
+            ->addFilter(
+                FilterGroup::and()
+                    ->add(Filter::gt($id_field, 2))
+                    ->add(
+                        new FilterQuery(
+                            $id_field,
+                            IFilter::IN,
+                            $filter_query
+                        )
+                    )
+            )
+            ->addFilter(Filter::notContain($last_field, "guerra"));
+
+        $sql = new Sql();
+        $sql->sentence = "SELECT SQL_CALC_FOUND_ROWS multibrand_userdata.* FROM multibrand_userdata WHERE (multibrand_userdata.id > ? AND multibrand_userdata.id IN (SELECT multibrand_userdata.id AS id FROM multibrand_userdata WHERE multibrand_userdata.first_name LIKE ?)) AND multibrand_userdata.last_name NOT LIKE ? LIMIT 20 OFFSET 0";
+        $sql->params = [
+            2,
+            '%fede%',
+            '%guerra%'
+        ];
+        $this->assertEqualsCanonicalizing($sql, $query->toSQL());
+
     }
 
 }

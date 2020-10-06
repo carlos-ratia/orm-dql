@@ -214,12 +214,7 @@ class QueryParts
             if ($filter instanceof FilterNull) {
                 continue;
             }
-            /** @var ISql $sql */
-            if ($filter instanceof Filter) {
-                $sql = $filter->setStrategyToSQL(new FilterToWhereConditionSQL())->toSQL();
-            } else {
-                $sql = $filter->setStrategyToSQL(new FilterGroupToWhereConditionSQL())->toSQL();
-            }
+            $sql = $filter->toSQL();
             $this->where[] = $sql->getSentence();
             $this->addParams($sql->getParams());
         }
