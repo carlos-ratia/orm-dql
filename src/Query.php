@@ -7,6 +7,7 @@ namespace Cratia\ORM\DQL;
 use Cratia\ORM\DQL\Interfaces\IField;
 use Cratia\ORM\DQL\Interfaces\IFilter;
 use Cratia\ORM\DQL\Interfaces\IGroupBy;
+use Cratia\ORM\DQL\Interfaces\IHaving;
 use Cratia\ORM\DQL\Interfaces\IOrderBy;
 use Cratia\ORM\DQL\Interfaces\IQuery;
 use Cratia\ORM\DQL\Interfaces\ISql;
@@ -66,6 +67,11 @@ class Query implements IQuery
     private $strategyToSQL;
 
     /**
+     * @var IHaving
+     */
+    private $having;
+
+    /**
      * Query constructor.
      * @param ITable|null $from
      * @param IStrategyToSQL|null $strategy
@@ -89,6 +95,7 @@ class Query implements IQuery
         $this->filters = [];
         $this->groupBys = [];
         $this->orderBys = [];
+        $this->having = new HavingNull();
     }
 
     /**
@@ -277,5 +284,23 @@ class Query implements IQuery
             ->setLimit($query->getLimit())
             ->setOffset($query->getOffset());
         return $this;
+    }
+
+    /**
+     * @param IHaving $having
+     * @return IQuery
+     */
+    public function setHaving(IHaving $having): IQuery
+    {
+        $this->having = $having;
+        return $this;
+    }
+
+    /**
+     * @return IHaving
+     */
+    public function getHaving(): IHaving
+    {
+        return $this->having;
     }
 }

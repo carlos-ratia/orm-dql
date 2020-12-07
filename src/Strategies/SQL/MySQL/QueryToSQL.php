@@ -106,6 +106,12 @@ class QueryToSQL implements IStrategyToSQL
             $sqlOrderBys = implode(', ', $this->getQueryParts()->getOrderBys());
         }
 
+        //HAVING
+        $sqlHaving = false;
+        if ($this->getQueryParts()->hasGroupBys() && $this->getQueryParts()->hasHaving()) {
+            $sqlHaving = $this->getQueryParts()->getHaving();
+        }
+
         $sql = (!$sqlFoundRows)
             ? "SELECT"
             : "SELECT SQL_CALC_FOUND_ROWS";
@@ -120,6 +126,9 @@ class QueryToSQL implements IStrategyToSQL
         $sql = (!$sqlGroupBys)                    //GROUP BY
             ? $sql
             : "{$sql} GROUP BY {$sqlGroupBys}";
+        $sql = (!$sqlHaving)                      //HAVING
+            ? $sql
+            : "{$sql} HAVING {$sqlHaving}";
         $sql = (!$sqlOrderBys)                    //ORDER BY
             ? $sql
             : "{$sql} ORDER BY {$sqlOrderBys}";
