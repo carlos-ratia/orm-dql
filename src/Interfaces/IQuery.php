@@ -128,4 +128,15 @@ interface IQuery
      * @return IQuery
      */
     public function join(IQuery $query): IQuery;
+
+    /**
+     * @param IHaving $having
+     * @return IQuery
+     */
+    public function setHaving(IHaving $having): IQuery;
+
+    /**
+     * @return IHaving
+     */
+    public function getHaving(): IHaving;
 }

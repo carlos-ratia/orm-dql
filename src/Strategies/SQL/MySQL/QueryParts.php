@@ -6,12 +6,13 @@ namespace Cratia\ORM\DQL\Strategies\SQL\MySQL;
 
 
 use Cratia\ORM\DQL\FieldNull;
-use Cratia\ORM\DQL\Filter;
 use Cratia\ORM\DQL\FilterNull;
 use Cratia\ORM\DQL\GroupByNull;
+use Cratia\ORM\DQL\HavingNull;
 use Cratia\ORM\DQL\Interfaces\IField;
 use Cratia\ORM\DQL\Interfaces\IFilter;
 use Cratia\ORM\DQL\Interfaces\IGroupBy;
+use Cratia\ORM\DQL\Interfaces\IHaving;
 use Cratia\ORM\DQL\Interfaces\IOrderBy;
 use Cratia\ORM\DQL\Interfaces\IQuery;
 use Cratia\ORM\DQL\Interfaces\IRelation;
@@ -83,6 +84,11 @@ class QueryParts
     private $relations;
 
     /**
+     * @var string|false
+     */
+    private $having;
+
+    /**
      * QueryParts constructor.
      * @param IQuery $query
      */
@@ -99,6 +105,7 @@ class QueryParts
         $this->where = [];
         $this->orderBys = [];
         $this->groupBys = [];
+        $this->having = false;
         $this->limit = $query->getLimit();
         $this->offset = $query->getOffset();
         $this->params = [];
@@ -110,6 +117,7 @@ class QueryParts
         $this->loadSqlFiltersForQuery($query);  //WHERES
         $this->loadSqlGroupBysForQuery($query); //GROUP BYS
         $this->loadSqlOrderBysForQuery($query); //ORDER BYS
+        $this->loadSqlHavingForQuery($query);   //HAVING
     }
 
     /**
@@ -493,7 +501,6 @@ class QueryParts
     }
 
 
-
     /**
      * @param array $params
      * @return QueryParts
@@ -502,5 +509,43 @@ class QueryParts
     {
         $this->params = array_merge($this->params, $params);
         return $this;
+    }
+
+    /**
+     * @return string|false
+     */
+    public function getHaving()
+    {
+        return $this->having;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasHaving(): bool
+    {
+        return (
+            $this->getHaving() !== false &&
+            is_string($this->getHaving()) &&
+            !empty($this->getHaving())
+        );
+    }
+
+    /**
+     * @param IQuery $query
+     */
+    protected function loadSqlHavingForQuery(IQuery $query): void
+    {
+        $having = $query->getHaving();
+        if (
+            ($having instanceof IHaving) &&
+            !($having instanceof HavingNull)
+        ) {
+            $sql = $having
+                ->setStrategyToSQL(new FilterGroupToWhereConditionSQL())
+                ->toSQL();
+            $this->having = $sql->getSentence();
+            $this->addParams($sql->getParams());
+        }
     }
 }
