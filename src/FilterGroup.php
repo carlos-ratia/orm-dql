@@ -40,7 +40,7 @@ class FilterGroup implements IFilter
      * @param bool $mode
      * @param IStrategyToSQL $strategyToSql
      */
-    private function __construct($filters, bool $mode, IStrategyToSQL $strategyToSql)
+    protected function __construct($filters, bool $mode, IStrategyToSQL $strategyToSql)
     {
         $this->filters = $filters;
         $this->mode = $mode;
