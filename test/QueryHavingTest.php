@@ -148,8 +148,6 @@ class QueryHavingTest extends PHPUnit_TestCase
         $table1 = new Table("table_1", "t1");
         $field10 = Field::column($table1, "id_consumer", "register_id");
         $field11 = Field::column($table1, "id_brand_table_1", "id_brand_table_1");
-        $field13 = Field::column($table1, "last_name");
-        $field14 = Field::column($table1, "allow_brand");
 
         $table2 = new Table("table_2", "t2");
         $field20 = Field::column($table2, "id", "consumer_id");
@@ -189,6 +187,57 @@ class QueryHavingTest extends PHPUnit_TestCase
 
         $sql->sentence = "SELECT SQL_CALC_FOUND_ROWS t1.* FROM table_1 AS t1 INNER JOIN table_2 AS t2 ON t1.id_consumer = t2.id WHERE (t2.last_name NOT IN (?,?) OR t2.allow_newsletters != ?) GROUP BY t1.id_consumer HAVING ((t2.last_name NOT IN (?,?) OR t2.allow_newsletters != ?)) LIMIT 0 OFFSET 1";
         $sql->params = ["ratia", "viloria", 0, "ratia", "viloria", 0];
+        $this->assertEqualsCanonicalizing($sql, $query->toSQL());
+    }
+
+    public function testQuery4()
+    {
+        $table1 = new Table("table_1", "t1");
+        $field10 = Field::column($table1, "id_consumer", "register_id");
+        $field11 = Field::column($table1, "id_brand_table_1", "id_brand_table_1");
+        $field13 = Field::column($table1, "last_name");
+        $field14 = Field::column($table1, "allow_brand");
+
+        $table2 = new Table("table_2", "t2");
+        $field20 = Field::column($table2, "id", "consumer_id");
+        $field23 = Field::column($table2, "last_name");
+        $field24 = Field::column($table2, "allow_newsletters");
+
+        $table3 = new Table("brand_table_1", "bt1");
+        $field30 = Field::column($table3, "id", "brand_consumer_id");
+        $field31 = Field::column($table3, "allow_brand", "brand_consumer_id");
+
+        $table1
+            ->addRelation(Relation::inner($field10, $field20))
+            ->addRelation(
+                Relation::inner($field11, $field30)
+                    ->addFilter(Filter::eq($field31, true))
+            );
+
+        $query = new Query($table1);
+        $query
+            ->addFilter(
+                FilterGroup::or()
+                    ->add(Filter::notIn($field23, ["ratia", "viloria"]))
+                    ->add(Filter::ne($field24, false))
+            )
+            ->addGroupBy(GroupBy::create($field10))
+            ->setHaving(
+                Having::create()
+                    ->addCondition(
+                        FilterGroup::or()
+                            ->add(Filter::notIn($field23, ["ratia", "viloria"]))
+                            ->add(Filter::ne($field24, false))
+                    )
+                    ->addCondition(Filter::ne($field24, false))
+            )
+            ->setLimit(0)
+            ->setOffset(1);
+
+        $sql = new Sql();
+
+        $sql->sentence = "SELECT SQL_CALC_FOUND_ROWS t1.* FROM table_1 AS t1 INNER JOIN table_2 AS t2 ON t1.id_consumer = t2.id WHERE (t2.last_name NOT IN (?,?) OR t2.allow_newsletters != ?) GROUP BY t1.id_consumer HAVING ((t2.last_name NOT IN (?,?) OR t2.allow_newsletters != ?) AND t2.allow_newsletters != ?) LIMIT 0 OFFSET 1";
+        $sql->params = ["ratia", "viloria", 0, "ratia", "viloria", 0, 0];
         $this->assertEqualsCanonicalizing($sql, $query->toSQL());
     }
 }
