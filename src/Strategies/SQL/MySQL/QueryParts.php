@@ -17,6 +17,7 @@ use Cratia\ORM\DQL\Interfaces\IOrderBy;
 use Cratia\ORM\DQL\Interfaces\IQuery;
 use Cratia\ORM\DQL\Interfaces\IRelation;
 use Cratia\ORM\DQL\Interfaces\ISql;
+use Cratia\ORM\DQL\Interfaces\IStrategyToSQL;
 use Cratia\ORM\DQL\Interfaces\ITable;
 use Cratia\ORM\DQL\OrderByNull;
 use Cratia\ORM\DQL\RelationNull;
@@ -255,8 +256,11 @@ class QueryParts
             if ($orderBy instanceof OrderByNull) {
                 continue;
             }
+            if (!($orderBy->getStrategyToSQL() instanceof  IStrategyToSQL)) {
+                $orderBy->setStrategyToSQL(new OrderByToSQL());
+            }
             /** @var ISql $sql */
-            $sql = $orderBy->setStrategyToSQL(new OrderByToSQL())->toSQL();
+            $sql = $orderBy->toSQL();
             $this->orderBys[] = $sql->getSentence();
             $this->addParams($sql->getParams());
         }
